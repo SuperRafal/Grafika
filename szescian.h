@@ -3,3 +3,4 @@
 #include <GL/glu.h>    // biblioteka dodatkowych narzedzi dla OpenGL  
 #include <GL/glaux.h>  // biblioteka wspierajaca OpenGL 
 #include <math.h>	   // biblioteka matematyczna
+//#include <SOIL.h>	   // wczytywanie obrazow

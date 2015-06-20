@@ -33,6 +33,8 @@
 #include <string.h>
 
 
+
+
 /* Vectors */
 typedef float vec3_t[3];
 typedef float vec4_t[4];
@@ -81,7 +83,19 @@ struct obj_model_t
 	struct obj_texCoord_t *texCoords;  /* tex. coord. list */
 	struct obj_normal_t *normals;      /* normal vector list */
 	struct obj_face_t *faces;          /* model's polygons */
-}gasienice, kadlub, lufa, wieza;
+	GLuint *texture[1];
+
+	/* Position */
+
+	float pos_x;
+	float pos_y;
+	float pos_z;
+	float angle;
+}gasienice, kadlub, lufa, wieza, trawa, ziemia, box;
+
+void SetPosition(struct obj_model_t *mdl, float x, float y, float z);
+
+void SetRotate(struct obj_model_t *mdl, float angle);
 
 /*** An OBJ model ***/
 struct obj_model_t objfile;

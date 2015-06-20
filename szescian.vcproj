@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8,00"
 	Name="szescian"
-	ProjectGUID="{80D15CCE-413E-40A5-A441-5119422BDA2F}"
+	ProjectGUID="{3586154C-8437-41C5-BCC6-C6B42E90C028}"
 	RootNamespace="szescian"
 	>
 	<Platforms>
@@ -198,10 +198,6 @@
 	</References>
 	<Files>
 		<File
-			RelativePath=".\objLoader.h"
-			>
-		</File>
-		<File
 			RelativePath="szescian.c"
 			>
 			<FileConfiguration
@@ -220,10 +216,6 @@
 					PreprocessorDefinitions=""
 				/>
 			</FileConfiguration>
-		</File>
-		<File
-			RelativePath=".\szescian.h"
-			>
 		</File>
 	</Files>
 	<Globals>

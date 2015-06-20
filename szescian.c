@@ -5,6 +5,7 @@
 
 #include "szescian.h"
 #include "objLoader.h"
+#include <time.h>
 
 
 LONG WINAPI WndProc( HWND, UINT, WPARAM, LPARAM );
@@ -37,8 +38,12 @@ void FreeModel(struct obj_model_t *mdl);
 int MallocModel(struct obj_model_t *mdl);
 int FirstPass(FILE *fp, struct obj_model_t *mdl);
 int SecondPass(FILE *fp, struct obj_model_t *mdl);
-int ReadOBJModel(const char *filename, struct obj_model_t *mdl);
+int ReadOBJModel(const char *filename, struct obj_model_t *mdl, const char *texname);
 void RenderOBJModel(struct obj_model_t *mdl);
+int LoadGLTextures(struct obj_model_t *mdl, const char* texname);
+AUX_RGBImageRec *LoadBMP(const char *Filename);
+void SetPosition(struct obj_model_t *mdl, float x, float y, float z);
+void SetRotate(struct obj_model_t *mdl, float angle);
 
 
 // ..............................
@@ -49,11 +54,26 @@ struct obj_model_t *gasienice1 = &gasienice;
 struct obj_model_t *kadlub1 = &kadlub;
 struct obj_model_t *lufa1 = &lufa;
 struct obj_model_t *wieza1 = &wieza;
+struct obj_model_t *trawa1 = &trawa;
+struct obj_model_t *ziemia1 = &ziemia;
+struct obj_model_t *box1 = &box;
 
 /*
 *  KOD DO WCZYTYWANIA MODELI W OBJ
 *
 */
+
+void SetPosition(struct obj_model_t *mdl, float x, float y, float z)
+{
+	mdl->pos_x = x;
+	mdl->pos_y = y;
+	mdl->pos_z = z;
+}
+
+void SetRotate(struct obj_model_t *mdl, float angle)
+{
+	mdl->angle = angle;
+}
 
 void FreeModel(struct obj_model_t *mdl)
 {
@@ -132,6 +152,8 @@ int MallocModel(struct obj_model_t *mdl)
 		if (!mdl->faces)
 			return 0;
 	}
+
+	mdl->texture[0] = (GLuint*)malloc(sizeof(GLuint));
 
 	return 1;
 }
@@ -422,7 +444,7 @@ int SecondPass(FILE *fp, struct obj_model_t *mdl)
 	return 1;
 }
 
-int ReadOBJModel(const char *filename, struct obj_model_t *mdl)
+int ReadOBJModel(const char *filename, struct obj_model_t *mdl, const char *texname)
 {
 	FILE *fp;
 
@@ -462,12 +484,19 @@ int ReadOBJModel(const char *filename, struct obj_model_t *mdl)
 	}
 
 	fclose(fp);
+	if(!LoadGLTextures(mdl, texname))
+		return 0;
 	return 1;
 }
 
 void RenderOBJModel(struct obj_model_t *mdl)
 {
 	int i, j;
+	glBindTexture(GL_TEXTURE_2D, mdl->texture[0]);
+	glPushMatrix();
+	glColor3f(1,1,1);
+	glRotatef(mdl->angle, 0, 1, 0);
+	glTranslatef(mdl->pos_x, mdl->pos_y, mdl->pos_z);
 
 	for (i = 0; i < mdl->num_faces; ++i)
 	{
@@ -475,7 +504,7 @@ void RenderOBJModel(struct obj_model_t *mdl)
 		for (j = 0; j < mdl->faces[i].num_elems; ++j)
 		{
 			if (mdl->has_texCoords)
-				glTexCoord3fv(mdl->texCoords[mdl->faces[i].uvw_indices[j]].uvw);
+				glTexCoord2fv(mdl->texCoords[mdl->faces[i].uvw_indices[j]].uvw);
 
 			if (mdl->has_normals)
 				glNormal3fv(mdl->normals[mdl->faces[i].norm_indices[j]].ijk);
@@ -483,7 +512,63 @@ void RenderOBJModel(struct obj_model_t *mdl)
 			glVertex4fv(mdl->vertices[mdl->faces[i].vert_indices[j]].xyzw);
 		}
 		glEnd();
+		glPopMatrix();
 	}
+}
+
+AUX_RGBImageRec *LoadBMP(char *Filename)				// Loads A Bitmap Image
+{
+	FILE *File=NULL;									// File Handle
+
+	if (!Filename)										// Make Sure A Filename Was Given
+	{
+		return NULL;									// If Not Return NULL
+	}
+
+	File=fopen(Filename,"r");							// Check To See If The File Exists
+
+	if (File)											// Does The File Exist?
+	{
+		fclose(File);									// Close The Handle
+		return auxDIBImageLoad(Filename);				// Load The Bitmap And Return A Pointer
+	}
+
+	return NULL;										// If Load Failed Return NULL
+}
+
+int LoadGLTextures(struct obj_model_t *mdl, const char *texname)									// Load Bitmaps And Convert To Textures
+{
+	int Status=FALSE;									// Status Indicator
+
+	AUX_RGBImageRec *TextureImage[1];					// Create Storage Space For The Texture
+
+	memset(TextureImage,0,sizeof(void *)*1);           	// Set The Pointer To NULL
+
+	// Load The Bitmap, Check For Errors, If Bitmap's Not Found Quit
+	if (TextureImage[0]=LoadBMP(texname))
+	{
+		Status=TRUE;									// Set The Status To TRUE
+
+		glGenTextures(1, &mdl->texture[0]);					// Create The Texture
+
+		// Typical Texture Generation Using Data From The Bitmap
+		glBindTexture(GL_TEXTURE_2D, mdl->texture[0]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TextureImage[0]->sizeX, TextureImage[0]->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureImage[0]->data);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	}
+
+	if (TextureImage[0])									// If Texture Exists
+	{
+		if (TextureImage[0]->data)							// If Texture Image Exists
+		{
+			free(TextureImage[0]->data);					// Free The Texture Image Memory
+		}
+
+		free(TextureImage[0]);								// Free The Image Structure
+	}
+
+	return Status;										// Return The Status
 }
 
 
@@ -550,10 +635,7 @@ int WINAPI WinMain (HINSTANCE hInstance,
         return( 0 );
         }
 
-    ReadOBJModel("C:\\Users\\Rafa許\Desktop\\STUDIA\\Grafika komputerowa\\szescian\\gasienice.obj", gasienice1);
-	ReadOBJModel("C:\\Users\\Rafa許\Desktop\\STUDIA\\Grafika komputerowa\\szescian\\kadlub.obj", kadlub1);
-	ReadOBJModel("C:\\Users\\Rafa許\Desktop\\STUDIA\\Grafika komputerowa\\szescian\\lufa.obj", lufa1);
-	ReadOBJModel("C:\\Users\\Rafa許\Desktop\\STUDIA\\Grafika komputerowa\\szescian\\wieza.obj", wieza1);
+	
 	ShowWindow( hWnd, nCmdShow );// Wyswietlanie okna
     UpdateWindow( hWnd );        // Aktualizacja okna
 
@@ -625,7 +707,7 @@ LONG WINAPI WndProc(HWND hWnd,
             
 			// czyszczenie
 			glClearColor(0.5f,0.5f,0.5f,1.0f);
-			
+
 			glEnable(GL_COLOR_MATERIAL);
 			wglMakeCurrent( NULL, NULL );
             ReleaseDC( hWnd, hDC );
@@ -787,26 +869,29 @@ HGLRC SetUpOpenGL( HWND hWnd )
 	hRC = wglCreateContext( hDC );
     ReleaseDC( hWnd, hDC );
 
+
+	srand(time(0));
+
     return hRC;
 }
 
 
-
+int dupa=0;
 //******************************************************** 
 //  Glowna funkcja rysujaca.
 //******************************************************** 
-
 void DrawOpenGLScene( )
 {
 	GLfloat position[4]={10.0f, 10.0, 100.0f, 0.0f};
     
 	// flagi czynnosci pomocniczych
-
+	glEnable(GL_TEXTURE_2D);
     glEnable( GL_DEPTH_TEST );
+
     
 	// czyszczenie buforow
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	
+
 	//glEnable(GL_CULL_FACE);
 	glEnable(GL_COLOR_MATERIAL);
 
@@ -828,12 +913,26 @@ void DrawOpenGLScene( )
 	glRotatef(pivot_vert_angle, 1, 0, 0);
 	glRotatef(pivot_horiz_angle, 0, 1, 0);
 	
-	glPushMatrix();
+	//glPushMatrix();
 		//szescian !!!!!!!!!!!!!!!!!!!!!!!!!!
+		if(dupa==0)
+		{
+			ReadOBJModel("woodenbox.obj", box1, "woodenbox.bmp");
+			SetPosition(box1, rand()%5, 100, rand()%6);
+			SetRotate(box1, rand()%360);
+			ReadOBJModel("czolg.obj", kadlub1, "kadlub.bmp");
+			SetPosition(kadlub1, 200, 5, 0);
+			ReadOBJModel("lufa.obj", lufa1, "lufa.bmp");
+			ReadOBJModel("wieza.obj", wieza1, "wieza.bmp");
+			ReadOBJModel("ziemia.obj", ziemia1, "trawa.bmp");
+			dupa++;
+		}
+		RenderOBJModel(box1);
 		RenderOBJModel(lufa1);
 		RenderOBJModel(kadlub1);
 		RenderOBJModel(wieza1);
-	glPopMatrix();
+		RenderOBJModel(ziemia1);
+	//glPopMatrix();
 
     glFlush ();
 }

@@ -1,0 +1,32 @@
+# Blender MTL File: 'Etapkoncowytekstury.blend'
+# Material Count: 3
+
+newmtl Material
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd C:\Users\Rafał\Desktop\kadlub.png
+
+newmtl Material_1.008
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd E:\\Tanks\\A11_T29\\T29.dds
+
+newmtl Material_1.009
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd E:\\Tanks\\USA\\tracks\\T29_track.dds
