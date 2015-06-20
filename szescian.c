@@ -57,6 +57,9 @@ struct obj_model_t *wieza1 = &wieza;
 struct obj_model_t *trawa1 = &trawa;
 struct obj_model_t *ziemia1 = &ziemia;
 struct obj_model_t *box1 = &box;
+struct obj_model_t *kadlub2 = &kadlub;
+struct obj_model_t *lufa2 = &lufa;
+struct obj_model_t *wieza2 = &wieza;
 
 /*
 *  KOD DO WCZYTYWANIA MODELI W OBJ
@@ -68,6 +71,7 @@ void SetPosition(struct obj_model_t *mdl, float x, float y, float z)
 	mdl->pos_x = x;
 	mdl->pos_y = y;
 	mdl->pos_z = z;
+	
 }
 
 void SetRotate(struct obj_model_t *mdl, float angle)
@@ -921,17 +925,31 @@ void DrawOpenGLScene( )
 			SetPosition(box1, rand()%5, 100, rand()%6);
 			SetRotate(box1, rand()%360);
 			ReadOBJModel("czolg.obj", kadlub1, "kadlub.bmp");
-			SetPosition(kadlub1, 200, 5, 0);
 			ReadOBJModel("lufa.obj", lufa1, "lufa.bmp");
 			ReadOBJModel("wieza.obj", wieza1, "wieza.bmp");
 			ReadOBJModel("ziemia.obj", ziemia1, "trawa.bmp");
+			ReadOBJModel("czolg.obj", kadlub2, "kadlub.bmp");
+			ReadOBJModel("lufa.obj", lufa2, "lufa.bmp");
+			ReadOBJModel("wieza.obj", wieza2, "wieza.bmp");
 			dupa++;
 		}
+		glTranslatef(-20,0,0);
+		
 		RenderOBJModel(box1);
 		RenderOBJModel(lufa1);
 		RenderOBJModel(kadlub1);
 		RenderOBJModel(wieza1);
 		RenderOBJModel(ziemia1);
+		glTranslatef(20,0,-4);
+		glRotatef(180,0,1.0,0);
+		RenderOBJModel(lufa2);
+		
+		RenderOBJModel(kadlub2);
+		RenderOBJModel(wieza2);
+
+		glTranslatef(10,0,0);
+
+		
 	//glPopMatrix();
 
     glFlush ();

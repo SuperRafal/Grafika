@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="windows-1250"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="szescian"
-	ProjectGUID="{3586154C-8437-41C5-BCC6-C6B42E90C028}"
+	ProjectGUID="{FC206DDA-E637-4422-A4C5-AA41A3260C6B}"
 	RootNamespace="szescian"
 	>
 	<Platforms>
