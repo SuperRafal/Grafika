@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="szescian"
-	ProjectGUID="{2C0A6B7C-14A8-4790-A6FB-4F3F567600BA}"
+	ProjectGUID="{4BB29901-B81F-47CE-AE62-991CF67E7BDC}"
 	RootNamespace="szescian"
 	>
 	<Platforms>

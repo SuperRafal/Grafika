@@ -756,40 +756,63 @@ LONG WINAPI WndProc(HWND hWnd,
 					z_dist-=0.5f;
 					pivot_y-=0.1f;
 					pivot_x+=0.05f;
-					kadlub1->pos_x+=0.5f;
-					lufa1->pos_x+=0.5f;
-					wieza1->pos_x+=0.5f;
-					gasienice1->pos_x+=0.5f;
+					kadlub1->pos_x+=0.5f*cos(kadlub1->angle);
+					lufa1->pos_x+=0.5f*cos(lufa1->angle);
+					wieza1->pos_x+=0.5f*cos(wieza1->angle);
+					gasienice1->pos_x+=0.5f*cos(gasienice1->angle);
+
+					kadlub1->pos_z-=0.5f*sin(kadlub1->angle);
+					lufa1->pos_z-=0.5f*sin(lufa1->angle);
+					wieza1->pos_z-=0.5f*sin(wieza1->angle);
+					gasienice1->pos_z-=0.5f*sin(gasienice1->angle);
 					InvalidateRect(hWnd, NULL, FALSE);
 					break;
 				case VK_DOWN:
 					z_dist+=0.5f;
 					pivot_y+=0.1f;
 					pivot_x-=0.05f;
-					kadlub1->pos_x-=0.5f;
-					lufa1->pos_x-=0.5f;
-					wieza1->pos_x-=0.5f;
-					gasienice1->pos_x-=0.5f;
+					kadlub1->pos_x-=0.5f*cos(kadlub1->angle);
+					lufa1->pos_x-=0.5f*cos(lufa1->angle);
+					wieza1->pos_x-=0.5f*cos(wieza1->angle);
+					gasienice1->pos_x-=0.5f*cos(gasienice1->angle);
+
+					kadlub1->pos_z-=-0.5f*sin(kadlub1->angle);
+					lufa1->pos_z-=-0.5f*sin(lufa1->angle);
+					wieza1->pos_z-=-0.5f*sin(wieza1->angle);
+					gasienice1->pos_z-=-0.5f*sin(gasienice1->angle);
 					InvalidateRect(hWnd, NULL, FALSE);
 					break;
 
 				// obrot w poziomie
 				case VK_RIGHT:
 					
+				
 					pivot_horiz_angle+=0.5f;
-					if (pivot_horiz_angle>=360)
-						pivot_horiz_angle-=360;
+					if (pivot_horiz_angle<0)
+					pivot_horiz_angle+=360;
+
+					z_dist+=0.02f;
+					
+					pivot_x+=0.045f;
+
 					kadlub1->angle-=0.5f;
 					lufa1->angle-=0.5f;
 					wieza1->angle-=0.5f;
 					gasienice1->angle-=0.5f;
 					
+					
 					InvalidateRect(hWnd, NULL, FALSE);
 					break;
 				case VK_LEFT:
+
 					pivot_horiz_angle-=0.5f;
 					if (pivot_horiz_angle<0)
 					pivot_horiz_angle+=360;
+
+					z_dist+=0.02f;
+					
+					pivot_x-=0.045f;
+
 					kadlub1->angle+=0.5f;
 					lufa1->angle+=0.5f;
 					wieza1->angle+=0.5f;
