@@ -499,28 +499,28 @@ int ReadOBJModel(const char *filename, struct obj_model_t *mdl, const char *texn
 
 void RenderOBJModel(struct obj_model_t *mdl)
 {
-	int i, j;
-	for (i = 0; i < mdl->num_faces; ++i)
-	{
-		glBindTexture(GL_TEXTURE_2D, mdl->texture[0]);
-		glPushMatrix();
-		glColor3f(1,1,1);
-		glRotatef(mdl->angle, 0, 1, 0);
-		glTranslatef(mdl->pos_x, mdl->pos_y, mdl->pos_z);
-		glBegin(mdl->faces[i].type);
-		for (j = 0; j < mdl->faces[i].num_elems; ++j)
-		{
-			if (mdl->has_texCoords)
-				glTexCoord2fv(mdl->texCoords[mdl->faces[i].uvw_indices[j]].uvw);
-
-			if (mdl->has_normals)
-				glNormal3fv(mdl->normals[mdl->faces[i].norm_indices[j]].ijk);
-
-			glVertex4fv(mdl->vertices[mdl->faces[i].vert_indices[j]].xyzw);
-		}
-		glEnd();
-		glPopMatrix();
-	}
+        int i, j;
+        for (i = 0; i < mdl->num_faces; ++i)
+        {
+                glBindTexture(GL_TEXTURE_2D, mdl->texture[0]);
+                glPushMatrix();
+                glColor3f(1,1,1);
+                glTranslatef(mdl->pos_x, mdl->pos_y, mdl->pos_z);
+                glRotatef(mdl->angle, 0, 1, 0);
+                glBegin(mdl->faces[i].type);
+                for (j = 0; j < mdl->faces[i].num_elems; ++j)
+                {
+                        if (mdl->has_texCoords)
+                                glTexCoord2fv(mdl->texCoords[mdl->faces[i].uvw_indices[j]].uvw);
+ 
+                        if (mdl->has_normals)
+                                glNormal3fv(mdl->normals[mdl->faces[i].norm_indices[j]].ijk);
+ 
+                        glVertex4fv(mdl->vertices[mdl->faces[i].vert_indices[j]].xyzw);
+                }
+                glEnd();
+                glPopMatrix();
+        }
 }
 
 AUX_RGBImageRec *LoadBMP(char *Filename)				// Loads A Bitmap Image
