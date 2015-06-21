@@ -91,7 +91,7 @@ struct obj_model_t
 	float pos_y;
 	float pos_z;
 	float angle;
-}gasienice, kadlub, lufa, wieza, trawa, ziemia, box;
+}gasienice, kadlub, lufa, wieza, trawa, ziemia, box, drzewo;
 
 void SetPosition(struct obj_model_t *mdl, float x, float y, float z);
 

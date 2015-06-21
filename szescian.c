@@ -12,11 +12,11 @@ LONG WINAPI WndProc( HWND, UINT, WPARAM, LPARAM );
 HGLRC SetUpOpenGL( HWND hWnd );
 
 // Wartosci poczatkowe
-#define	DEFAULT_Z_DIST		25
-#define DEFAULT_PIVOT_VERT_ANGLE	0
-#define DEFAULT_PIVOT_HORIZ_ANGLE	0
-#define DEFAULT_PIVOT_X				0
-#define DEFAULT_PIVOT_Y				0
+#define	DEFAULT_Z_DIST		10
+#define DEFAULT_PIVOT_VERT_ANGLE	12
+#define DEFAULT_PIVOT_HORIZ_ANGLE	95
+#define DEFAULT_PIVOT_X				-3
+#define DEFAULT_PIVOT_Y				-5
 
 
 float z_dist=DEFAULT_Z_DIST;						// INSERT, PAGE UP
@@ -44,6 +44,7 @@ int LoadGLTextures(struct obj_model_t *mdl, const char* texname);
 AUX_RGBImageRec *LoadBMP(const char *Filename);
 void SetPosition(struct obj_model_t *mdl, float x, float y, float z);
 void SetRotate(struct obj_model_t *mdl, float angle);
+void RysujZiemie();
 
 
 // ..............................
@@ -60,6 +61,10 @@ struct obj_model_t *box1 = &box;
 struct obj_model_t *kadlub2 = &kadlub;
 struct obj_model_t *lufa2 = &lufa;
 struct obj_model_t *wieza2 = &wieza;
+struct obj_model_t *drzewo1 = &drzewo;
+struct obj_model_t *box2;
+struct obj_model_t *trawa2;
+struct obj_model_t *drzewo2;
 
 /*
 *  KOD DO WCZYTYWANIA MODELI W OBJ
@@ -68,10 +73,9 @@ struct obj_model_t *wieza2 = &wieza;
 
 void SetPosition(struct obj_model_t *mdl, float x, float y, float z)
 {
-	mdl->pos_x = x;
-	mdl->pos_y = y;
-	mdl->pos_z = z;
-	
+	mdl->pos_x += x;
+	mdl->pos_y += y;
+	mdl->pos_z += z;	
 }
 
 void SetRotate(struct obj_model_t *mdl, float angle)
@@ -496,14 +500,13 @@ int ReadOBJModel(const char *filename, struct obj_model_t *mdl, const char *texn
 void RenderOBJModel(struct obj_model_t *mdl)
 {
 	int i, j;
-	glBindTexture(GL_TEXTURE_2D, mdl->texture[0]);
-	glPushMatrix();
-	glColor3f(1,1,1);
-	glRotatef(mdl->angle, 0, 1, 0);
-	glTranslatef(mdl->pos_x, mdl->pos_y, mdl->pos_z);
-
 	for (i = 0; i < mdl->num_faces; ++i)
 	{
+		glBindTexture(GL_TEXTURE_2D, mdl->texture[0]);
+		glPushMatrix();
+		glColor3f(1,1,1);
+		//glRotatef(mdl->angle, 0, 1, 0);
+		glTranslatef(mdl->pos_x, mdl->pos_y, mdl->pos_z);
 		glBegin(mdl->faces[i].type);
 		for (j = 0; j < mdl->faces[i].num_elems; ++j)
 		{
@@ -674,6 +677,7 @@ LONG WINAPI WndProc(HWND hWnd,
     GLsizei glnWidth, glnHeight;
 
 	float change;
+	int x;
 
 
     // Petla komunikatow 
@@ -746,17 +750,32 @@ LONG WINAPI WndProc(HWND hWnd,
 
 			switch ((int)wParam)
 			{
+			case 76:
+				kadlub1->pos_x+=0.5f;
+				lufa1->pos_x+=0.5f;
+				wieza1->pos_x+=0.5f;
+				gasienice1->pos_x+=0.5f;
+				InvalidateRect(hWnd, NULL, FALSE);
+				break;
 				// obrot w pionie
 				case VK_UP:
-					pivot_vert_angle+=5;
+					/*pivot_vert_angle+=5;
 					if (pivot_vert_angle>=360)
-						pivot_vert_angle-=360;
+						pivot_vert_angle-=360;*/
+					kadlub1->pos_x+=1;
+					lufa1->pos_x+=1;
+					wieza1->pos_x+=1;
+					gasienice1->pos_x+=1;
 					InvalidateRect(hWnd, NULL, FALSE);
 					break;
 				case VK_DOWN:
-					pivot_vert_angle-=5;
+					/*pivot_vert_angle-=5;
 					if (pivot_vert_angle<0)
-						pivot_vert_angle+=360;
+						pivot_vert_angle+=360;*/
+					kadlub1->pos_x-=0.5f;
+					lufa1->pos_x-=0.5f;
+					wieza1->pos_x-=0.5f;
+					gasienice1->pos_x-=0.5f;
 					InvalidateRect(hWnd, NULL, FALSE);
 					break;
 
@@ -880,12 +899,17 @@ HGLRC SetUpOpenGL( HWND hWnd )
 }
 
 
-int dupa=0;
+
 //******************************************************** 
 //  Glowna funkcja rysujaca.
 //******************************************************** 
 void DrawOpenGLScene( )
 {
+	static int i= 0;
+	int j;
+	int przesun_x=5;
+	int przesun_y = 0;
+	int przesun_z=5;
 	GLfloat position[4]={10.0f, 10.0, 100.0f, 0.0f};
     
 	// flagi czynnosci pomocniczych
@@ -919,35 +943,76 @@ void DrawOpenGLScene( )
 	
 	//glPushMatrix();
 		//szescian !!!!!!!!!!!!!!!!!!!!!!!!!!
-		if(dupa==0)
+		if(i==0)
 		{
-			ReadOBJModel("woodenbox.obj", box1, "woodenbox.bmp");
-			SetPosition(box1, rand()%5, 100, rand()%6);
-			SetRotate(box1, rand()%360);
-			ReadOBJModel("czolg.obj", kadlub1, "kadlub.bmp");
-			ReadOBJModel("lufa.obj", lufa1, "lufa.bmp");
-			ReadOBJModel("wieza.obj", wieza1, "wieza.bmp");
-			ReadOBJModel("ziemia.obj", ziemia1, "trawa.bmp");
-			ReadOBJModel("czolg.obj", kadlub2, "kadlub.bmp");
-			ReadOBJModel("lufa.obj", lufa2, "lufa.bmp");
-			ReadOBJModel("wieza.obj", wieza2, "wieza.bmp");
-			dupa++;
+			//for(j=1; j<5; j++)
+			//{
+			//	trawa2=(struct obj_model_t*)realloc(trawa2,j*sizeof(struct obj_model_t));
+			//	ReadOBJModel("Assets/Objects/trawa.obj", (trawa2+j-1), "Assets/Textures/drzewo.bmp");     // TRAWA
+			//	SetPosition((trawa2+j-1), rand()%40, 0, rand()%40);
+			//}
+			for(j=1; j<6; j++)
+			{
+				drzewo2=(struct obj_model_t*)realloc(drzewo2,j*sizeof(struct obj_model_t));
+				ReadOBJModel("Assets/Objects/drzewo.obj", (drzewo2+j-1), "Assets/Textures/drzewo.bmp");                        // DRZEWO
+				if(j%2==0)
+					SetPosition((drzewo2+j-1), rand()%40, 0, rand()%40);
+				else
+					SetPosition((drzewo2+j-1), -rand()%40, 0, -rand()%40);
+			}
+			for(j=1; j<11; j++)
+			{
+				box2=(struct obj_model_t*)realloc(box2,j*sizeof(struct obj_model_t));
+				ReadOBJModel("Assets/Objects/woodenbox.obj", (box2+j-1), "Assets/Textures/woodenbox.bmp");                     //DREWNIANA SKRZYNIA
+				if(j%2==0)
+					SetPosition((box2+j-1), rand()%40, 0.45f, rand()%40);
+				else
+					SetPosition((box2+j-1), -rand()%40, 0.45f, -rand()%40);
+			}
+			ReadOBJModel("Assets/Objects/kadlub.obj", kadlub1, "Assets/Textures/kadlub.bmp");
+			SetPosition(kadlub1, przesun_x, przesun_y, przesun_z);
+			ReadOBJModel("Assets/Objects/gasienice.obj", gasienice1, "Assets/Textures/gasienice.bmp");
+			SetPosition(gasienice1, przesun_x, przesun_y, przesun_z);
+			ReadOBJModel("Assets/Objects/lufa.obj", lufa1, "Assets/Textures/lufa.bmp");
+			SetPosition(lufa1, przesun_x, przesun_y, przesun_z);
+			ReadOBJModel("Assets/Objects/wieza.obj", wieza1, "Assets/Textures/wieza.bmp");                           //CZOLG1
+			SetPosition(wieza1, przesun_x, przesun_y, przesun_z);
+			ReadOBJModel("Assets/Objects/ziemia.obj", ziemia1, "Assets/Textures/trawa.bmp");				// PODLOZE
+			//ReadOBJModel("Assets/Objects/czolg.obj", kadlub2, "Assets/Textures/kadlub.bmp");
+			//ReadOBJModel("Assets/Objects/lufa.obj", lufa2, "Assets/Textures/lufa.bmp");
+			//ReadOBJModel("Assets/Objects/wieza.obj", wieza2, "Assets/Textures/wieza.bmp");							//CZOLG2
+			i++;
 		}
-		glTranslatef(-20,0,0);
-		
-		RenderOBJModel(box1);
+		//glTranslatef(-20,0,0);
+
+		RenderOBJModel(ziemia1);
+		for(j=0; j<10; j++)
+		{
+			RenderOBJModel((box2+j));
+		}
+		for(j=0; j<5; j++)
+		{
+			RenderOBJModel((drzewo2+j));
+		}
+		/*for(j=0; j<4; j++)
+		{
+			RenderOBJModel((trawa2+j));
+		}*/
 		RenderOBJModel(lufa1);
 		RenderOBJModel(kadlub1);
+		RenderOBJModel(drzewo1);
+		RenderOBJModel(gasienice1);
 		RenderOBJModel(wieza1);
-		RenderOBJModel(ziemia1);
-		glTranslatef(20,0,-4);
-		glRotatef(180,0,1.0,0);
-		RenderOBJModel(lufa2);
 		
-		RenderOBJModel(kadlub2);
-		RenderOBJModel(wieza2);
+		//glTranslatef(20,0,-4);
+		//glRotatef(180,0,1.0,0);
+		//RenderOBJModel(lufa2);
+		
+		//RenderOBJModel(kadlub2);
+		//RenderOBJModel(wieza2);
 
-		glTranslatef(10,0,0);
+		//glTranslatef(10,0,0);
+		
 
 		
 	//glPopMatrix();
