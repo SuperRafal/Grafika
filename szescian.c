@@ -12,10 +12,10 @@ LONG WINAPI WndProc( HWND, UINT, WPARAM, LPARAM );
 HGLRC SetUpOpenGL( HWND hWnd );
 
 // Wartosci poczatkowe
-#define	DEFAULT_Z_DIST		10
+#define	DEFAULT_Z_DIST		7
 #define DEFAULT_PIVOT_VERT_ANGLE	12
 #define DEFAULT_PIVOT_HORIZ_ANGLE	95
-#define DEFAULT_PIVOT_X				-3
+#define DEFAULT_PIVOT_X				-5
 #define DEFAULT_PIVOT_Y				-5
 
 
@@ -678,6 +678,7 @@ LONG WINAPI WndProc(HWND hWnd,
 
 	float change;
 	int x;
+	int j;
 
 
     // Petla komunikatow 
@@ -752,9 +753,9 @@ LONG WINAPI WndProc(HWND hWnd,
 			{
 				// obrot w pionie
 				case VK_UP:
-					/*pivot_vert_angle+=5;
-					if (pivot_vert_angle>=360)
-						pivot_vert_angle-=360;*/
+					z_dist-=0.5f;
+					pivot_y-=0.1f;
+					pivot_x+=0.05f;
 					kadlub1->pos_x+=0.5f;
 					lufa1->pos_x+=0.5f;
 					wieza1->pos_x+=0.5f;
@@ -762,9 +763,9 @@ LONG WINAPI WndProc(HWND hWnd,
 					InvalidateRect(hWnd, NULL, FALSE);
 					break;
 				case VK_DOWN:
-					/*pivot_vert_angle-=5;
-					if (pivot_vert_angle<0)
-						pivot_vert_angle+=360;*/
+					z_dist+=0.5f;
+					pivot_y+=0.1f;
+					pivot_x-=0.05f;
 					kadlub1->pos_x-=0.5f;
 					lufa1->pos_x-=0.5f;
 					wieza1->pos_x-=0.5f;
@@ -774,19 +775,26 @@ LONG WINAPI WndProc(HWND hWnd,
 
 				// obrot w poziomie
 				case VK_RIGHT:
-					/*pivot_horiz_angle+=5;
+					
+					pivot_horiz_angle+=0.5f;
 					if (pivot_horiz_angle>=360)
-						pivot_horiz_angle-=360;*/
+						pivot_horiz_angle-=360;
 					kadlub1->angle-=0.5f;
 					lufa1->angle-=0.5f;
 					wieza1->angle-=0.5f;
 					gasienice1->angle-=0.5f;
+					
 					InvalidateRect(hWnd, NULL, FALSE);
 					break;
 				case VK_LEFT:
-					pivot_horiz_angle-=5;
+					pivot_horiz_angle-=0.5f;
 					if (pivot_horiz_angle<0)
-						pivot_horiz_angle+=360;
+					pivot_horiz_angle+=360;
+					kadlub1->angle+=0.5f;
+					lufa1->angle+=0.5f;
+					wieza1->angle+=0.5f;
+					gasienice1->angle+=0.5f;
+				
 					InvalidateRect(hWnd, NULL, FALSE);
 					break;
 
@@ -907,6 +915,7 @@ void DrawOpenGLScene( )
 	int przesun_x=5;
 	int przesun_y = 0;
 	int przesun_z=5;
+	int pocz=0;
 	/*GLfloat position[4]={10.0f, 10.0, 100.0f, 0.0f};
 	GLfloat swiatlo_otoczenia[4] = { 10.0f, 10.0, 100.0f, 0.0f };*/
 
@@ -945,6 +954,7 @@ void DrawOpenGLScene( )
   	glTranslatef( pivot_x, pivot_y, -z_dist );
 	glRotatef(pivot_vert_angle, 1, 0, 0);
 	glRotatef(pivot_horiz_angle, 0, 1, 0);
+	
 	
 	//glPushMatrix();
 		//szescian !!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -989,7 +999,6 @@ void DrawOpenGLScene( )
 			i++;
 		}
 		//glTranslatef(-20,0,0);
-
 		RenderOBJModel(ziemia1);
 		for(j=0; j<10; j++)
 		{
@@ -999,13 +1008,15 @@ void DrawOpenGLScene( )
 		{
 			RenderOBJModel((drzewo2+j));
 		}
+
+	
 		/*for(j=0; j<4; j++)
 		{
 			RenderOBJModel((trawa2+j));
 		}*/
 		RenderOBJModel(lufa1);
 		RenderOBJModel(kadlub1);
-		RenderOBJModel(drzewo1);
+		//RenderOBJModel(drzewo1);
 		RenderOBJModel(gasienice1);
 		RenderOBJModel(wieza1);
 		
