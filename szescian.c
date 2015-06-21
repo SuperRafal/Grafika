@@ -505,7 +505,7 @@ void RenderOBJModel(struct obj_model_t *mdl)
 		glBindTexture(GL_TEXTURE_2D, mdl->texture[0]);
 		glPushMatrix();
 		glColor3f(1,1,1);
-		//glRotatef(mdl->angle, 0, 1, 0);
+		glRotatef(mdl->angle, 0, 1, 0);
 		glTranslatef(mdl->pos_x, mdl->pos_y, mdl->pos_z);
 		glBegin(mdl->faces[i].type);
 		for (j = 0; j < mdl->faces[i].num_elems; ++j)
@@ -750,22 +750,15 @@ LONG WINAPI WndProc(HWND hWnd,
 
 			switch ((int)wParam)
 			{
-			case 76:
-				kadlub1->pos_x+=0.5f;
-				lufa1->pos_x+=0.5f;
-				wieza1->pos_x+=0.5f;
-				gasienice1->pos_x+=0.5f;
-				InvalidateRect(hWnd, NULL, FALSE);
-				break;
 				// obrot w pionie
 				case VK_UP:
 					/*pivot_vert_angle+=5;
 					if (pivot_vert_angle>=360)
 						pivot_vert_angle-=360;*/
-					kadlub1->pos_x+=1;
-					lufa1->pos_x+=1;
-					wieza1->pos_x+=1;
-					gasienice1->pos_x+=1;
+					kadlub1->pos_x+=0.5f;
+					lufa1->pos_x+=0.5f;
+					wieza1->pos_x+=0.5f;
+					gasienice1->pos_x+=0.5f;
 					InvalidateRect(hWnd, NULL, FALSE);
 					break;
 				case VK_DOWN:
@@ -781,9 +774,13 @@ LONG WINAPI WndProc(HWND hWnd,
 
 				// obrot w poziomie
 				case VK_RIGHT:
-					pivot_horiz_angle+=5;
+					/*pivot_horiz_angle+=5;
 					if (pivot_horiz_angle>=360)
-						pivot_horiz_angle-=360;
+						pivot_horiz_angle-=360;*/
+					kadlub1->angle-=0.5f;
+					lufa1->angle-=0.5f;
+					wieza1->angle-=0.5f;
+					gasienice1->angle-=0.5f;
 					InvalidateRect(hWnd, NULL, FALSE);
 					break;
 				case VK_LEFT:
@@ -910,7 +907,12 @@ void DrawOpenGLScene( )
 	int przesun_x=5;
 	int przesun_y = 0;
 	int przesun_z=5;
-	GLfloat position[4]={10.0f, 10.0, 100.0f, 0.0f};
+	/*GLfloat position[4]={10.0f, 10.0, 100.0f, 0.0f};
+	GLfloat swiatlo_otoczenia[4] = { 10.0f, 10.0, 100.0f, 0.0f };*/
+
+	GLfloat posLight0[4] = { -1.0f, 1.0f, 1.0f, 0.0f };
+	GLfloat ambLight0[4] = { 1.8f, 1.8f, 1.8f, 1.5f };
+	GLfloat difLight0[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
     
 	// flagi czynnosci pomocniczych
 	glEnable(GL_TEXTURE_2D);
@@ -926,7 +928,10 @@ void DrawOpenGLScene( )
 	auxInitDisplayMode(AUX_SINGLE|AUX_RGBA);
 	
 	// wlaczenie oswietlenia
-	glLightfv(GL_LIGHT0, GL_POSITION, position);
+	glLightfv(GL_LIGHT0, GL_POSITION, posLight0);
+	//glLightfv(GL_LIGHT0, GL_AMBIENT, ambLight0);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, difLight0);
+	glEnable(GL_LIGHT0);
 	glEnable(GL_LIGHT0);
 	glEnable(GL_LIGHTING);
 
